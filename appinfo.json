@@ -1,0 +1,10 @@
+{
+	"id": "com.veer.flipclock",
+	"version": "1.0.0",
+	"vendor": "Veer",
+	"type": "web",
+	"main": "index.html",
+	"title": "Veer Flip Clock",
+	"icon": "icon.png",
+    "uiRevision": 2
+}

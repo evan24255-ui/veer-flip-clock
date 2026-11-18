@@ -1,3 +1,8 @@
+
+/* ========================================
+   1. 页面基础
+======================================== */
+
 html,
 body {
     margin: 0;
@@ -20,14 +25,17 @@ body,
     background: #000 !important;
 }
 
+
+/* ========================================
+   2. 时钟布局
+======================================== */
+
 #clock {
     position: absolute;
     top: 0;
     left: 0;
-
-    width: 320px;
-    height: 400px;
-
+    width: 100%;
+    height: 100%;
     margin: 0;
     background: #000;
 }
@@ -35,130 +43,253 @@ body,
 .clock-display {
     position: absolute;
     top: 50%;
-    left: 0; 
-    width: 320px;
-    -webkit-transform: translateY(-50%);
+    left: 0;
+    width: 100%;
 
     display: -webkit-box;
     -webkit-box-orient: horizontal;
     -webkit-box-pack: center;
     -webkit-box-align: center;
+
+    -webkit-transform: translateY(-50%);
 }
 
-/* 数字卡片 */
+
+/* ========================================
+   3. 两位数字卡片组
+======================================== */
+
+.clock-group {
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+
+    background: #202020;
+    border: 1px solid #292929;
+    border-radius: 5px;
+
+    box-shadow:
+            0 2px 4px rgba(0, 0, 0, 0.55);
+}
+
+
+/* ========================================
+   4. 单个数字卡片
+======================================== */
+
 .digit {
     position: relative;
+
     width: 60px;
     height: 110px;
-    margin: 0 2px;
+    margin: 0;
+    padding: 0;
 
     background: #171717;
-    border-radius: 5px;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+
     overflow: hidden;
+
+    -webkit-perspective: 400px;
+    -webkit-transform-style: preserve-3d;
 }
+
+/* 两个数字之间只保留一条细线 */
+.clock-group .digit + .digit {
+    border-left: 1px solid #080808;
+}
+
+/* 禁止数字卡片之间出现额外间距 */
+.clock-group .digit {
+    margin: 0;
+    padding: 0;
+}
+
+
+/* ========================================
+   5. 静态数字层
+======================================== */
 
 .digit-top,
 .digit-bottom {
     position: absolute;
     left: 0;
     width: 100%;
-    height: 110px;
+    height: 55px;
+    overflow: hidden;
 
-    font-size: 56px;
-    line-height: 55px;
+    font-size: 76px;
     font-weight: bold;
     text-align: center;
-    color: #f5f5f5;
 }
 
 .digit-top {
     top: 0;
-    overflow: hidden;
-    border-bottom: 1px solid #000;
+    z-index: 4;
+
+    background: linear-gradient(
+            to bottom,
+            #292929 0%,
+            #242424 100%
+    );
+
+    border-bottom: 1px solid #080808;
 }
 
 .digit-bottom {
     top: 55px;
-    overflow: hidden;
+    z-index: 3;
+
+    background: linear-gradient(
+            to bottom,
+            #202020 0%,
+            #262626 100%
+    );
+
     border-top: 1px solid #333;
 }
 
+
+/* ========================================
+   6. 数字文字
+======================================== */
+
+.digit-top span,
+.digit-bottom span,
+.flip-front span,
+.flip-back span {
+    position: absolute;
+    display: block;
+    left: 0;
+    width: 100%;
+    height: 110px;
+
+    color: #eeeeee;
+    font-size: 76px;
+    font-weight: bold;
+    line-height: 110px;
+    text-align: center;
+
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+.digit-top span {
+    top: 0;
+}
+
+.digit-bottom span {
+    top: -55px;
+}
+
+
+/* ========================================
+   7. 翻页动画层
+======================================== */
+
+.flip-front,
+.flip-back {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 55px;
+    overflow: hidden;
+
+    -webkit-backface-visibility: hidden;
+}
+
+.flip-front {
+    top: 0;
+    z-index: 1;
+
+    background: linear-gradient(
+            to bottom,
+            #292929 0%,
+            #242424 100%
+    );
+
+    -webkit-transform-origin: bottom;
+    -webkit-transform: rotateX(0deg);
+    -webkit-transition: -webkit-transform 700ms ease-in;
+}
+
+.flip-back {
+    top: 55px;
+    z-index: 0;
+
+    background: linear-gradient(
+            to bottom,
+            #202020 0%,
+            #262626 100%
+    );
+
+    -webkit-transform-origin: top;
+    -webkit-transform: rotateX(90deg);
+    -webkit-transition: -webkit-transform 700ms ease-out;
+}
+
+.flip-front span {
+    top: 0;
+}
+
+.flip-back span {
+    top: -55px;
+}
+
+
+/* ========================================
+   8. 动画状态
+======================================== */
+
+/* 第一阶段：旧数字上半部分翻转 */
+
+.digit.flip-front-active .flip-front {
+    z-index: 4;
+    -webkit-transform: rotateX(-90deg);
+}
+
+.digit.flip-front-active .digit-top {
+    z-index: 1;
+}
+
+/* 第二阶段：新数字下半部分翻转 */
+
+.digit.flip-back-active .flip-back {
+    z-index: 3;
+    -webkit-transform: rotateX(0deg);
+}
+
+.digit.flip-back-active .digit-bottom {
+    z-index: 1;
+}
+
+
+/* ========================================
+   9. 时间分隔符
+======================================== */
+
 .separator {
+    margin: 0 2px;
+
+    color: #d8d8d8;
     font-size: 75px;
     font-weight: bold;
-    margin: 0 2px;
-    color: #fff;
     line-height: 100px;
 }
 
- 
- /* 横屏模式 */
+
+/* ========================================
+   10. 横屏布局
+======================================== */
+
 @media screen and (orientation: landscape) {
 
-
-    #clock {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right:0;
-        bottom:0;
-
-        width: 100%;
-        height: 100%;
-
-        background: #000;
-    }
-
-    .clock-display {
-        position: absolute;
-        top: 50%;
-        left: 0; 
-        width: 100%;
-        -webkit-transform: translateY(-50%);
-
-        display: -webkit-box;
-        -webkit-box-orient: horizontal;
-        -webkit-box-pack: center;
-        -webkit-box-align: center;
-    }
-
-    /* 数字卡片 */
     .digit {
-        position: relative;
-        width: 72px;
-        height: 132px;
-        margin: 0 4px;
-
-        background: #171717;
-        border-radius: 5px;
-        overflow: hidden;
+        width: 68px;
     }
-
-    .digit-top,
-    .digit-bottom {
-        position: absolute;
-        left: 0;
-        width: 100%;
-        height: 132px;
-
-        font-size: 76px;
-        line-height: 66px;
-        font-weight: bold;
-        text-align: center;
-        color: #f5f5f5;
-    }
-
-    .digit-top {
-        top: 0;
-        overflow: hidden;
-        border-bottom: 1px solid #000;
-    }
-
-    .digit-bottom {
-        top: 68px;
-        overflow: hidden;
-        border-top: 1px solid #333;
-    }
-
 
 }
